@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      td,
+      th {
+        border: black solid 1px;
+        margin: -2px;
+        padding: 8px;
+      }
+    </style>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thapar WebKisosk Leak</title>
+  </head>
+  <body>
+    <center>
+      Enter The Query:
+      <input
+        type="text"
+        value=""
+        name="qry string"
+        onchange="dosearch()"
+        oninput="dosearch()"
+        id="searchbox"
+      />
+
+      <br />
+      <br />
+      <br />
+
+      <table id="datas"></table>
+    </center>
+  </body>
+
+  <script>
+    var table = document.getElementById("datas");
+
+    var tablehead = `        <tr>
+            <th>Name</th>
+            <th>Roll No</th>
+            <th>Year</th>
+            <th>Info</th>
+            </tr>`;
+
+    get = new XMLHttpRequest();
+    get.open("GET", "./extract.json");
+    get.send();
+    var obj;
+    get.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        obj = JSON.parse(this.responseText);
+        console.log(obj);
+        loadinTable(obj);
+      }
+    };
+
+    function dosearch() {
+      qry = document.getElementById("searchbox").value;
+
+      var maxlength = parseInt(qry) ? 6 : 3;
+
+      if (qry.split("").length < maxlength) {
+        return;
+      }
+
+      console.log(qry);
+
+      var list = [];
+
+      obj.forEach((o) => {
+        if (
+          o.roll_no.toString().includes(qry) ||
+          o.name.toLowerCase().includes(qry)
+        ) {
+          list.push(o);
+        }
+      });
+
+      loadinTable(list);
+    }
+
+    function loadinTable(data) {
+      table.innerHTML = "";
+      table.innerHTML = tablehead;
+
+      data.forEach((d) => {
+        var roll = d.roll_no.toString();
+        roll = roll.slice(0, 4);
+        roll = parseInt(roll);
+        roll += 1000;
+
+        var year = new Date().getFullYear();
+        year = year - roll + "th Year";
+
+        table.innerHTML += `<tr>
+                <td>${d.name}</td>
+                <td>${d.roll_no}</td>
+                <td>${year}</td>
+                <td>
+                    <button onclick=loadHtml("./${d.roll_no}/personal_info.html")>Info</button>
+                    <button onclick=loadHtml("./${d.roll_no}/marks.html")>Marks</button>
+                    <button onclick=loadHtml("./${d.roll_no}/feeinfo.html")>Fee</button>
+                    </td>
+                </tr>`;
+      });
+    }
+
+    function loadHtml(path) {
+      get = new XMLHttpRequest();
+      get.open("GET", "./extract/" + path);
+      get.send();
+      get.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var data = this.responseText;
+          data = data.replaceAll("\\n", "\n");
+          data = data.replaceAll("\\t", "\t");
+          data = data.replaceAll("\\r", "\r");
+
+          const parser = new DOMParser();
+          var doc = parser.parseFromString(data, "text/html");
+
+          var table3 = doc.getElementsByTagName('table')[0];
+          var table4 = doc.getElementsByTagName('table')[1];
+          var table5 = doc.getElementsByTagName('table')[2];
+
+
+        //   table.innerHTML =  `<button onclick="loadinTable(obj)">GO Back</button>` + table3.innerHTML;
+
+          table.innerHTML =  `<button onclick="location.reload()">GO Back</button>` + table3.innerHTML + table4.innerHTML + table5.innerHTML;
+
+
+        }
+      };
+    }
+  </script>
+</html>
