@@ -43,7 +43,7 @@
             <th>Info</th>
             </tr>`;
 
-    if (window.localStorage.getItem("datas") == null) {
+    if (window.localStorage.getItem("datas") == undefined) {
       get = new XMLHttpRequest();
       get.open("GET", "./extract.json");
       get.send();
@@ -52,12 +52,12 @@
         if (this.readyState == 4 && this.status == 200) {
           obj = JSON.parse(this.responseText);
           console.log(obj);
-          window.localStorage.setItem("datas", obj);
+          window.localStorage.setItem("datas", JSON.stringify(obj));
           loadinTable(obj);
         }
       };
     } else {
-      obj = window.localStorage.getItem("datas");
+      obj = JSON.parse(window.localStorage.getItem("datas"));
     }
 
     function dosearch() {
