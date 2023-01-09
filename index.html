@@ -43,17 +43,22 @@
             <th>Info</th>
             </tr>`;
 
-    get = new XMLHttpRequest();
-    get.open("GET", "./extract.json");
-    get.send();
-    var obj;
-    get.onreadystatechange = function () {
-      if (this.readyState == 4 && this.status == 200) {
-        obj = JSON.parse(this.responseText);
-        console.log(obj);
-        loadinTable(obj);
-      }
-    };
+    if (window.localStorage.getItem("datas") == null) {
+      get = new XMLHttpRequest();
+      get.open("GET", "./extract.json");
+      get.send();
+      var obj;
+      get.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          obj = JSON.parse(this.responseText);
+          console.log(obj);
+          window.localStorage.setItem("datas", obj);
+          loadinTable(obj);
+        }
+      };
+    } else {
+      obj = window.localStorage.getItem("datas");
+    }
 
     function dosearch() {
       qry = document.getElementById("searchbox").value;
@@ -120,16 +125,17 @@
           const parser = new DOMParser();
           var doc = parser.parseFromString(data, "text/html");
 
-          var table3 = doc.getElementsByTagName('table')[0];
-          var table4 = doc.getElementsByTagName('table')[1];
-          var table5 = doc.getElementsByTagName('table')[2];
+          var table3 = doc.getElementsByTagName("table")[0];
+          var table4 = doc.getElementsByTagName("table")[1];
+          var table5 = doc.getElementsByTagName("table")[2];
 
+          //   table.innerHTML =  `<button onclick="loadinTable(obj)">GO Back</button>` + table3.innerHTML;
 
-        //   table.innerHTML =  `<button onclick="loadinTable(obj)">GO Back</button>` + table3.innerHTML;
-
-          table.innerHTML =  `<button onclick="location.reload()">GO Back</button>` + table3.innerHTML + table4.innerHTML + table5.innerHTML;
-
-
+          table.innerHTML =
+            `<button onclick="location.reload()">GO Back</button>` +
+            table3.innerHTML +
+            table4.innerHTML +
+            table5.innerHTML;
         }
       };
     }
