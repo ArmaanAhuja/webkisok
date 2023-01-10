@@ -58,12 +58,14 @@
       };
     } else {
       obj = JSON.parse(window.localStorage.getItem("datas"));
+      loadinTable(obj);
+
     }
 
     function dosearch() {
       qry = document.getElementById("searchbox").value;
 
-      var maxlength = parseInt(qry) ? 6 : 3;
+      var maxlength = parseInt(qry) ? 4 : 3;
 
       if (qry.split("").length < maxlength) {
         return;
