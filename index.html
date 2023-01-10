@@ -63,7 +63,7 @@
     }
 
     function dosearch() {
-      qry = document.getElementById("searchbox").value;
+      qry = document.getElementById("searchbox").value.toLowerCase();
 
       var maxlength = parseInt(qry) ? 4 : 3;
 
